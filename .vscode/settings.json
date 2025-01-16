@@ -1,13 +1,60 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-	"files.exclude": {
-		"out": false, // set this to true to hide the "out" folder with the compiled JS files
-		"dist": false // set this to true to hide the "dist" folder with the compiled JS files
-	},
-	"search.exclude": {
-		"out": true, // set this to false to include "out" folder in search results
-		"dist": true // set this to false to include "dist" folder in search results
-	},
-	// Turn off tsc task auto detection since we have the necessary tasks as npm scripts
-	"typescript.tsc.autoDetect": "off"
+    "files.exclude": {
+        "out": false, // set this to true to hide the "out" folder with the compiled JS files
+        "dist": false // set this to true to hide the "dist" folder with the compiled JS files
+    },
+    "search.exclude": {
+        "out": true, // set this to false to include "out" folder in search results
+        "dist": true // set this to false to include "dist" folder in search results
+    },
+    // Turn off tsc task auto detection since we have the necessary tasks as npm scripts
+    "typescript.tsc.autoDetect": "off",
+    "editor.formatOnType": true,
+    "editor.formatOnSave": true,
+
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit",
+        "source.fixAll.stylelint": "explicit"
+    },
+    "peacock.color": "#775ac1",
+    "workbench.colorCustomizations": {
+        "activityBar.activeBackground": "#967fcf",
+        "activityBar.background": "#967fcf",
+        "activityBar.foreground": "#15202b",
+        "activityBar.inactiveForeground": "#15202b99",
+        "activityBarBadge.background": "#e5c6b9",
+        "activityBarBadge.foreground": "#15202b",
+        "commandCenter.border": "#e7e7e799",
+        "sash.hoverBorder": "#967fcf",
+        "statusBar.background": "#775ac1",
+        "statusBar.foreground": "#e7e7e7",
+        "statusBarItem.hoverBackground": "#967fcf",
+        "statusBarItem.remoteBackground": "#775ac1",
+        "statusBarItem.remoteForeground": "#e7e7e7",
+        "titleBar.activeBackground": "#775ac1",
+        "titleBar.activeForeground": "#e7e7e7",
+        "titleBar.inactiveBackground": "#775ac199",
+        "titleBar.inactiveForeground": "#e7e7e799"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[vue]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[less]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "prettier.printWidth": 120,
+    "prettier.tabWidth": 4
 }
