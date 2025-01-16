@@ -14,12 +14,35 @@
     "publisher": "wangming",
     "repository": "https://github.com/z58362026/falcon.git",
     "contributes": {
+        "icons": {
+            "icon-moon": {
+                "description": "generate button permission",
+                "default": {
+                    "fontPath": "src/assets/fonts/remixicon.woff",
+                    "fontCharacter": "\\ebd4"
+                }
+            }
+        },
         "commands": [
             {
                 "command": "falcon.helloWorld",
                 "title": "Hello World"
+            },
+            {
+                "command": "boss.auto-add-button-permission",
+                "title": "Auto Add Button Permission",
+                "icon": "$(icon-moon)"
             }
-        ]
+        ],
+        "menus": {
+            "editor/title": [
+                {
+                    "when": "editorLangId == vue",
+                    "command": "boss.auto-add-button-permission",
+                    "group": "navigation@-1"
+                }
+            ]
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run package",
