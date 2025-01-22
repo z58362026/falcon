@@ -22,7 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 
     const autoAddButtonPermissionCommand = vscode.commands.registerCommand(
-        "boss.auto-add-button-permission",
+        "falcon.auto-add-button-permission",
         autoAddButtonPermission
     );
     context.subscriptions.push(autoAddButtonPermissionCommand);
