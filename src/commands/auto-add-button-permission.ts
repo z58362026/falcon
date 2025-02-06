@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as vscodeHtmlService from "vscode-html-languageservice";
 import path from "path";
+import * as fs from "fs";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { buttonsMap } from "../utils/buttonMap";
 
@@ -13,6 +14,8 @@ interface buttonInfoType {
 
 let templateString: string = "";
 let document: vscode.TextDocument;
+let workspaceFolder: string = "";
+let vAllowButtonMap: { [key: string]: string } = {};
 
 const getActiveEditor = (): Promise<vscode.TextEditor> => {
     return new Promise((resolve) => {
@@ -27,8 +30,6 @@ const getActiveEditor = (): Promise<vscode.TextEditor> => {
 
 const getRelativePath = () => {
     const absolutePath = document.fileName;
-    // 获取工作区的根目录
-    const workspaceFolder = vscode.workspace.workspaceFolders?.[0].uri.fsPath || "";
     // 将绝对路径转换为相对路径
     const relativePath = path.relative(workspaceFolder, absolutePath);
     // 获取文件扩展名
@@ -55,6 +56,26 @@ const getTextDocument = (): Promise<vscodeHtmlService.HTMLDocument> => {
     });
 };
 
+// 获取项目内自定义v-allow-button.js对照表
+const getVAllowButtonMap = async () => {
+    // 定义要读取的文件路径
+    const buttonMapPath = path.join(workspaceFolder, "falcon-magic.json");
+    // 检查文件是否存在
+    if (!fs.existsSync(buttonMapPath)) {
+        vscode.window.showErrorMessage("falcon-magic.json文件不存在");
+        return;
+    }
+
+    try {
+        // 异步读取文件内容
+        const data = await fs.promises.readFile(buttonMapPath, "utf8");
+        vAllowButtonMap = JSON.parse(data).vAllowButtonMap || {};
+    } catch (error) {
+        console.log("error", error);
+        vscode.window.showErrorMessage(`项目内未配置权限按钮对照: ${(error as Error).message}`);
+    }
+};
+
 // 获取到el-button的node和位置
 const getButtonInfos = (templateDocument: vscodeHtmlService.HTMLDocument, relativePath: string) => {
     let hasUndefinedWord: number = 0;
@@ -65,7 +86,7 @@ const getButtonInfos = (templateDocument: vscodeHtmlService.HTMLDocument, relati
             if (typeof node.startTagEnd === "number" && typeof node.endTagStart === "number") {
                 innerText += templateString.slice(node.startTagEnd, node.endTagStart).trim();
             }
-            const vAllowValue = buttonsMap[innerText] || "";
+            const vAllowValue = vAllowButtonMap[innerText] || buttonsMap[innerText] || "";
             if (vAllowValue) {
                 const buttonInfo = {
                     node,
@@ -102,7 +123,7 @@ const getButtonInfos = (templateDocument: vscodeHtmlService.HTMLDocument, relati
     traverseNodes(templateDocument.roots);
 
     if (hasUndefinedWord) {
-        vscode.window.showInformationMessage("本文件存在按钮无法自动生成，请自行适配");
+        vscode.window.showInformationMessage("部分按钮请自行适配");
     }
     return buttonInfos;
 };
@@ -174,15 +195,19 @@ export default async function autoAddButtonPermission() {
     document = activeEditor.document;
     // 3. 获取文档的全部文本内容,模版字符串string
     templateString = document.getText();
-    // 4. 获取文件的相对路径
+    // 4.获取工作区的根目录
+    workspaceFolder = vscode.workspace.workspaceFolders?.[0].uri.fsPath || "";
+    // 5. 获取文件的相对路径
     const relativePath = getRelativePath();
-    // 5. 获取模版字符串生成的HTMLDocument
+    // 6. 获取模版字符串生成的HTMLDocument
     const templateDocument = await getTextDocument();
-    // 6. 获取到需要自动修改的el-button的node、位置、生成v-allow的值
+    // 7.获取项目内自定义v-allow-button.js对照表
+    await getVAllowButtonMap();
+    // 8. 获取到需要自动修改的el-button的node、位置、生成v-allow的值
     const buttonInfos = getButtonInfos(templateDocument, relativePath);
-    // 7. 所有已有对应的按钮插入标识
+    // 9. 所有已有对应的按钮插入标识
     const modifiedTemplateString = insertButtonPermission(buttonInfos);
-    // 8. 替换整个文档的内容
+    // 10. 替换整个文档的内容
     activeEditor.edit((editBuilder) => {
         const fullRange = new vscode.Range(document.positionAt(0), document.positionAt(templateString.length));
         editBuilder.replace(fullRange, modifiedTemplateString);
