@@ -62,7 +62,6 @@ const getVAllowButtonMap = async () => {
     const buttonMapPath = path.join(workspaceFolder, "falcon-magic.json");
     // 检查文件是否存在
     if (!fs.existsSync(buttonMapPath)) {
-        vscode.window.showErrorMessage("falcon-magic.json文件不存在");
         return;
     }
 
@@ -76,6 +75,10 @@ const getVAllowButtonMap = async () => {
     }
 };
 
+const getVAllowValue = (innerText: string) => {
+    return vAllowButtonMap[innerText] || buttonsMap[innerText] || "";
+};
+
 // 获取到el-button的node和位置
 const getButtonInfos = (templateDocument: vscodeHtmlService.HTMLDocument, relativePath: string) => {
     let hasUndefinedWord: number = 0;
@@ -86,7 +89,7 @@ const getButtonInfos = (templateDocument: vscodeHtmlService.HTMLDocument, relati
             if (typeof node.startTagEnd === "number" && typeof node.endTagStart === "number") {
                 innerText += templateString.slice(node.startTagEnd, node.endTagStart).trim();
             }
-            const vAllowValue = vAllowButtonMap[innerText] || buttonsMap[innerText] || "";
+            const vAllowValue = getVAllowValue(innerText);
             if (vAllowValue) {
                 const buttonInfo = {
                     node,
